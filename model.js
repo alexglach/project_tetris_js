@@ -10,14 +10,25 @@ COLORS = [
   "yellow",
   "purple"
 ];
-SHAPES = [
-  [[3,0], [3,1], [3,2], [3,3]], // FOUR ACROSS
-  [[1,0], [2,0], [2,1], [3,1]], // ZIG WITH LEFT SIDE UP
-  [[3,0], [2,0], [2,1], [1,1]], // ZIG WITH RIGHT SIDE UP 
-  [[3,0], [2,0], [2,1], [3,1]], // SQUARE
-  [[3,0], [2,0], [1,0], [1,1]], // L RIGHT
-  [[3,1], [2,1], [1,1], [1,0]] // L LEFT  
+
+SHAPENAMES = ["fourAcross", 
+              "farDown", 
+              "nearDown",
+              "zigLow",
+              "zigHigh",
+              "square",
+              "tBone"
 ];
+
+SHAPES = {
+  fourAcross: [[2,0], [2,1], [2,2], [2,3]], // FOUR ACROSS
+  farDown: [[2,0], [2,1], [2,2], [3,2]], // L WITH FAR SIDE DOWN
+  nearDown: [[2,0], [2,1], [2,2], [3,0]], // L WITH NEAR SIDE DOWN
+  zigLow: [[3,0], [2,1], [3,1], [2,2]], // ZIG WITH NEAR SIDE LOWER
+  zigHigh: [[2,0], [2,1], [3,1], [3,2]], // ZIG WITH NEAR SIDE HIGHER
+  square: [[1,1], [2,1], [2,2], [1,2]], // SQUARE
+  tBone: [[2,0], [2,1], [3,1], [2,2]] // T-Bone
+};
 
 TETRIS.game = {
 
@@ -36,12 +47,19 @@ TETRIS.game = {
 
   createPiece: function() {
     this.current_piece.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    this.current_piece.blocks = TETRIS.game.findShape();
+    this.current_piece.type = TETRIS.game.findShapeType();
+    this.current_piece.blocks = TETRIS.game.findShape(this.current_piece.type);
+    console.log(this.current_piece.type);
     TETRIS.game.addRightOffset();
+    this.current_piece.rotationLoc = 0;
   },
 
-  findShape: function(){
-    var shape =  SHAPES[Math.floor(Math.random() * SHAPES.length)];
+  findShapeType: function() {
+    return SHAPENAMES[Math.floor(Math.random() * SHAPENAMES.length)]
+  },
+
+  findShape: function(type){
+    var shape =  SHAPES[type];
     var piece = [];
     var block;
     for (var i = 0; i < shape.length; i++) {
@@ -70,6 +88,10 @@ TETRIS.game = {
       TETRIS.game.moveLaterally(1);
     } else if (keycode === 40) {
       TETRIS.game.dropPiece();
+    } else if (keycode === 32) {
+      var current_piece = TETRIS.game.current_piece
+      current_piece.rotationLoc += 1;
+      TETRIS.rotation.rotate();
     }
   },
 
