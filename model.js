@@ -43,14 +43,13 @@ TETRIS.game = {
   createPiece: function() {
     this.current_piece.color = COLORS[Math.floor(Math.random() * COLORS.length)];
     this.current_piece.blocks = TETRIS.game.findShape();
-    console.log(this.current_piece.blocks)
+    TETRIS.game.addRightOffset();
   },
 
   findShape: function(){
     var shape =  SHAPES[Math.floor(Math.random() * SHAPES.length)];
     var piece = [];
     var block;
-
     for (var i = 0; i < shape.length; i++) {
       block = [];
       for (var j = 0; j < shape[i].length; j++){
@@ -58,9 +57,15 @@ TETRIS.game = {
       }
       piece.push(block);
     }
-
-    console.log("SHAPE: " + shape)
     return piece;
+  },
+
+  addRightOffset: function() {
+    var blocks = TETRIS.game.current_piece.blocks;
+    var pushRightAmt = Math.floor(Math.random() * (BOARD_WIDTH - 3));
+    for (var i = 0; i < blocks.length; i++) {
+      blocks[i][1] += pushRightAmt;
+    }
   },
 
 
@@ -129,7 +134,6 @@ TETRIS.game = {
         var col = TETRIS.game.current_piece.blocks[i][1];
         TETRIS.game.board[row][col] = TETRIS.game.current_piece.color;
       } 
-      console.log("still moving")
       return true;
     } else {
       TETRIS.game.createPiece();
@@ -163,13 +167,6 @@ TETRIS.game = {
   },
 
   getCurrentState: function() {
-    // var tempBoard = TETRIS.game.board.slice(0);
-    // for (var i = 0; i < current_blocks.length; i++) {
-    //   var row = TETRIS.game.current_piece.blocks[i][0];
-    //   var col = TETRIS.game.current_piece.blocks[i][1];
-    //   tempBoard[row][col] = TETRIS.game.current_piece.color;
-    // }
-    // return tempBoard;
     return TETRIS.game.board
   },
 

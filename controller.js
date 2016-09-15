@@ -2,18 +2,27 @@ var TETRIS = TETRIS || {};
 INTERVAL = 500;
 
 TETRIS.controller = {
+  gameloop: {},
 
   play: function(){
     TETRIS.view.init();
     TETRIS.game.init();
-    setInterval( function(){
+    this.startGame();
+  },
+
+  keyListener: function(event) {
+    TETRIS.game.userMove(event.which);
+  },
+
+  startGame: function() {
+    gameLoop = setInterval( function(){
       TETRIS.game.tic();
       TETRIS.view.render(TETRIS.game.getCurrentState());
     }, INTERVAL);
   },
 
-  keyListener: function(event) {
-    TETRIS.game.userMove(event.which);
+  stopGame: function() {
+    clearInterval(gameLoop);
   }
 
 
