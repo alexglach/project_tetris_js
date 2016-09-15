@@ -35,6 +35,7 @@ TETRIS.game = {
   init: function() {
     this.createBoard();
     this.createPiece();
+    this.score = 0;
   },
 
   createBoard: function(){
@@ -178,7 +179,7 @@ TETRIS.game = {
   },
 
   getCurrentState: function() {
-    return TETRIS.game.board
+    return [TETRIS.game.board, TETRIS.game.score];
   },
 
   tic: function(){
@@ -200,6 +201,7 @@ TETRIS.game = {
       }
       if (markForDelete) {
         TETRIS.game.board.splice(i, 1);
+        TETRIS.game.score += 10;
         TETRIS.game.liftPiece();
         TETRIS.game.addRow();
       }

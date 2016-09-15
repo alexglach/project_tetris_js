@@ -6,7 +6,9 @@ TETRIS.view = {
     $(document).on('keydown', TETRIS.controller.keyListener);
   },
 
-  render: function(board){
+  render: function(game){
+    var board = game[0];
+    var score = game[1];
     $board = $('#board');
     $board.html("");
 
@@ -20,6 +22,7 @@ TETRIS.view = {
         }
       }
     }
+    $('#score').html("Your score: " + score);
   }
 
 
