@@ -19,12 +19,6 @@ SHAPES = [
   [[3,1], [2,1], [1,1], [1,0]] // L LEFT  
 ];
 
-// model
-//  gameboard = nested array that adds set pieces as they are set
-//  current_piece = array of coordinates [[[1,2][1,3][1,4]], orange]
-//  
-//  
-
 TETRIS.game = {
 
   init: function() {
@@ -68,12 +62,10 @@ TETRIS.game = {
     }
   },
 
-
   userMove: function(keycode) {
     console.log(keycode);
     if (keycode === 37) {
       TETRIS.game.moveLaterally(-1);
-
     } else if (keycode === 39) {
       TETRIS.game.moveLaterally(1);
     } else if (keycode === 40) {
@@ -81,35 +73,42 @@ TETRIS.game = {
     }
   },
 
-  moveLaterally: function(direction) {
+  hittingCurrentPiece: function(pieceRow, newCol){
     var current_blocks = TETRIS.game.current_piece.blocks;
+    var currentPiece = true;
+    for (var j = 0; j < current_blocks.length; j++) {
+      if ((current_blocks[j][0] === pieceRow) && 
+          (current_blocks[j][1] === newCol)){
+        currentPiece = false;
+      } 
+    }
+    return currentPiece;
+  },
+
+  checkLegalLateral: function(direction, current_blocks){
     for(var i = 0; i < current_blocks.length; i++) {
       var newCol = current_blocks[i][1] + direction;
-      var pieceRow = current_blocks[i][0]
+      var pieceRow = current_blocks[i][0];
       if (newCol >= BOARD_WIDTH || newCol < 0 ){
         return false;
       } else if (TETRIS.game.board[pieceRow][newCol]) {
-          var currentPiece = false;
-          for (var j = 0; j < current_blocks.length; j++) {
-            if ((current_blocks[j][0] === pieceRow) && 
-                (current_blocks[j][1] === newCol)){
-              currentPiece = true;
-            } 
-          }
-          if (!currentPiece) {
+          if (TETRIS.game.hittingCurrentPiece(pieceRow, newCol)) {
             return false;
           }
       }
     }
-    for(var k = 0; k < TETRIS.game.current_piece.blocks.length; k++) {
-        var row = TETRIS.game.current_piece.blocks[k][0];
-        var col = TETRIS.game.current_piece.blocks[k][1];
-        TETRIS.game.board[row][col] = undefined;
-      }   
-    for(i = 0; i < current_blocks.length; i++) {
-      current_blocks[i][1] += direction;
-    }
     return true;
+  },
+
+  moveLaterally: function(direction) {
+    var current_blocks = TETRIS.game.current_piece.blocks;
+    if (TETRIS.game.checkLegalLateral(direction, current_blocks)){
+      TETRIS.game.liftPiece();
+      for(i = 0; i < current_blocks.length; i++) {
+        current_blocks[i][1] += direction;
+      }
+      return true;
+    };
   },
 
   dropPiece: function(){
@@ -117,23 +116,13 @@ TETRIS.game = {
   },
 
   movePieceDownOne: function() {     
-
-    if (TETRIS.game.noCollision()) {
-      for(var i = 0; i < TETRIS.game.current_piece.blocks.length; i++) {
-        var row = TETRIS.game.current_piece.blocks[i][0];
-        var col = TETRIS.game.current_piece.blocks[i][1];
-        TETRIS.game.board[row][col] = undefined;
-      } 
-
-      for(i = 0; i < TETRIS.game.current_piece.blocks.length; i++) {
-        TETRIS.game.current_piece.blocks[i][0] += 1;
+    var current_blocks = TETRIS.game.current_piece.blocks
+    if (TETRIS.game.noCollisionBelow()) {
+      TETRIS.game.liftPiece();
+      for(i = 0; i < current_blocks.length; i++) {
+        current_blocks[i][0] += 1;
       }
-
-      for(i = 0; i < TETRIS.game.current_piece.blocks.length; i++) {
-        var row = TETRIS.game.current_piece.blocks[i][0];
-        var col = TETRIS.game.current_piece.blocks[i][1];
-        TETRIS.game.board[row][col] = TETRIS.game.current_piece.color;
-      } 
+      TETRIS.game.updateBoardWithNewPiece(current_blocks);
       return true;
     } else {
       TETRIS.game.createPiece();
@@ -142,26 +131,26 @@ TETRIS.game = {
 
   },
 
-  noCollision: function() {
+  updateBoardWithNewPiece: function(current_blocks){
+    for(i = 0; i < current_blocks.length; i++) {
+      var row = current_blocks[i][0];
+      var col = current_blocks[i][1];
+      TETRIS.game.board[row][col] = TETRIS.game.current_piece.color;
+    } 
+  },
+
+  noCollisionBelow: function() {
     var current_blocks = TETRIS.game.current_piece.blocks;
     for(var i = 0; i < current_blocks.length; i++) {
       var new_row = current_blocks[i][0] + 1;
       var col = current_blocks[i][1];
-
       if (new_row === BOARD_HEIGHT){
         return false;
       } else if (TETRIS.game.board[new_row][col]) {
-          var currentPiece = false;
-          for (var j = 0; j < current_blocks.length; j++) {
-            if ((current_blocks[j][0] === new_row) && 
-                (current_blocks[j][1] === col)){
-              currentPiece = true;
-            } 
-          }
-          if (!currentPiece) {
+          if (TETRIS.game.hittingCurrentPiece(new_row, col)) {
             return false;
           }
-      }
+      }  
     }
     return true;
   },
