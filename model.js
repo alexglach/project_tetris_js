@@ -96,7 +96,7 @@ TETRIS.game = {
     }
   },
 
-  hittingCurrentPiece: function(pieceRow, newCol){
+  notHittingCurrentPiece: function(pieceRow, newCol){
     var current_blocks = TETRIS.game.current_piece.blocks;
     var currentPiece = true;
     for (var j = 0; j < current_blocks.length; j++) {
@@ -115,7 +115,7 @@ TETRIS.game = {
       if (newCol >= BOARD_WIDTH || newCol < 0 ){
         return false;
       } else if (TETRIS.game.board[pieceRow][newCol]) {
-          if (TETRIS.game.hittingCurrentPiece(pieceRow, newCol)) {
+          if (TETRIS.game.notHittingCurrentPiece(pieceRow, newCol)) {
             return false;
           }
       }
@@ -170,7 +170,11 @@ TETRIS.game = {
       if (new_row === BOARD_HEIGHT){
         return false;
       } else if (TETRIS.game.board[new_row][col]) {
-          if (TETRIS.game.hittingCurrentPiece(new_row, col)) {
+          if (TETRIS.game.notHittingCurrentPiece(new_row, col)) {
+            if(new_row < 4) {
+              TETRIS.controller.stopGame();
+              alert("You Lose!");
+            }
             return false;
           }
       }  
