@@ -109,10 +109,9 @@ TETRIS.rotation = (function(game, piece) {
     for (var i = 0; i < newPieces.length; i++) {
       var newRow = newPieces[i][0];
       var newCol = newPieces[i][1];
-      if (newRow > BOARD_HEIGHT 
-         || newCol < 0 
-         || newCol >= BOARD_WIDTH) {
-        console.log("Stuck on 84");
+      if (newRow + rowsRemoved > BOARD_HEIGHT 
+         || newCol + colsRemoved < 0 
+         || newCol + colsRemoved >= BOARD_WIDTH) {
         return false;
       } else if (game.board[newRow][newCol]) {
         if (game.hittingCurrentPiece(newRow, newCol)) {
