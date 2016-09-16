@@ -22,7 +22,6 @@ TETRIS.rotation = (function(game, piece) {
       rotateTBone();
     } 
     resetOffset();
-
   };
 
   var reduceOffset = function() {
@@ -66,7 +65,10 @@ TETRIS.rotation = (function(game, piece) {
         piece.blocks = newPieces;
       }
     } else {
-      piece.blocks = SHAPES[piece.type];
+      var newPieces = SHAPES[piece.type];
+      if (noRotateCollisions(newPieces)) {
+        piece.blocks = SHAPES[piece.type];
+      }
     }
   };
 
